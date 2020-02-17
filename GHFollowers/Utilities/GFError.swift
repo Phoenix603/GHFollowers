@@ -1,8 +1,8 @@
 //
-//  ErrorMessages.swift
+//  GFError.swift
 //  GHFollowers
 //
-//  Created by Aleksei Zakharov on 2/3/20.
+//  Created by Aleksei Zakharov on 2/6/20.
 //  Copyright © 2020 Aleksei Zakharov. All rights reserved.
 //
 
