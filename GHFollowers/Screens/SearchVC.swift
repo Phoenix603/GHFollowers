@@ -10,9 +10,9 @@ import UIKit
 
 class SearchVC: UIViewController {
     
-    let logoImageView = UIImageView()
-    let usernameTextField = GFTextField()
-    let callToActionButton = GFButton(backgroundColor: .systemGreen, title: "Get Followers")
+    let logoImageView           = UIImageView()
+    let usernameTextField       = GFTextField()
+    let callToActionButton      = GFButton(backgroundColor: .systemGreen, title: "Get Followers")
     
     var isUsernameEntered: Bool {
         return !usernameTextField.text!.isEmpty
@@ -21,6 +21,7 @@ class SearchVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        view.addSubviews(logoImageView, usernameTextField, callToActionButton)
         configureLogoImageView()
         configureTextField()
         configureButton()
@@ -33,7 +34,7 @@ class SearchVC: UIViewController {
     }
     
     func createDismissKeyboardTapGesture() {
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing))
         view.addGestureRecognizer(tap)
     }
     
@@ -48,19 +49,21 @@ class SearchVC: UIViewController {
                                        buttonTitle: "OK")
             return
         }
-        let followersListVC         = FollowersListVC()
-        followersListVC.username    = usernameTextField.text
-        followersListVC.title       = usernameTextField.text
+        
+        usernameTextField.resignFirstResponder()
+        
+        let followersListVC = FollowersListVC(username: usernameTextField.text!)
         navigationController?.pushViewController(followersListVC, animated: true)        
     }
     
     func configureLogoImageView() {
-        view.addSubview(logoImageView)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.image = UIImage(named: "gh-logo")
+        logoImageView.image = Images.ghLogo
         
+        let topConstraintConstant: CGFloat = DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80
+      
         NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topConstraintConstant),
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.heightAnchor.constraint(equalToConstant: 200),
             logoImageView.widthAnchor.constraint(equalToConstant: 200)
@@ -68,7 +71,6 @@ class SearchVC: UIViewController {
     }
     
     func configureTextField() {
-        view.addSubview(usernameTextField)
         usernameTextField.delegate = self
         usernameTextField.text = "SAllen0400"; #warning("Delete")
         
@@ -81,7 +83,6 @@ class SearchVC: UIViewController {
     }
     
     func configureButton() {
-        view.addSubview(callToActionButton)
         callToActionButton.addTarget(self, action: #selector(pushFollowersListVC), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
@@ -91,7 +92,6 @@ class SearchVC: UIViewController {
             callToActionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
         ])
     }
-    
 }
 
 
@@ -100,5 +100,4 @@ extension SearchVC: UITextFieldDelegate {
         pushFollowersListVC()
         return true
     }
-    
 }

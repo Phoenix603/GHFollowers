@@ -25,11 +25,10 @@ class GFTabbarController: UITabBarController {
     }
     
     func createFavoritesNC() -> UINavigationController {
-           let favoritesListVC  = FavoritesListVC()
-           favoritesListVC.title = "Favorites"
-           favoritesListVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: .favorites, tag: 1)
-           
-           return UINavigationController(rootViewController: favoritesListVC)
+        let favoritesListVC  = FavoritesListVC()
+        favoritesListVC.title = "Favorites"
+        favoritesListVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: .favorites, tag: 1)
+       
+        return UINavigationController(rootViewController: favoritesListVC)
     }
-
 }

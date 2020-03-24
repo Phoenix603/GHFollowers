@@ -17,8 +17,7 @@ class FollowerCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        configureAvatarImageView()
-        configureUsernameLabel()
+        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -27,24 +26,21 @@ class FollowerCell: UICollectionViewCell {
     
     func set (follower: Follower) {
         usernameLabel.text = follower.login
-        avatarImageView.downloadImage(from: follower.avatarUrl)
+        NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            DispatchQueue.main.async { self.avatarImageView.image = image }
+        }
     }
     
-    private func configureAvatarImageView() {
-        addSubview(avatarImageView)
+    private func configure() {
+        addSubviews(avatarImageView, usernameLabel)
         
         NSLayoutConstraint.activate([
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             avatarImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor)
-        ])
-    }
-    
-    private func configureUsernameLabel() {
-        addSubview(usernameLabel)
-        
-        NSLayoutConstraint.activate([
+            avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor),
+            
             usernameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 12),
             usernameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             usernameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),

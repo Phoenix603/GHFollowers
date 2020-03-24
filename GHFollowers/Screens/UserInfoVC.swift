@@ -8,11 +8,6 @@
 
 import UIKit
 
-protocol UserInfoVCDelegate: class {
-    func didTapGitHubProfile(for user: User)
-    func didTapGetFollowers(for user: User)
-}
-
 class UserInfoVC: UIViewController {
     
     var username: String!
@@ -55,19 +50,12 @@ class UserInfoVC: UIViewController {
     }
     
     func configureUIElements(with user: User) {
+                
+        self.add(childVC: GFUserInfoHeaderVC    (user: user),                   to: self.headerView)
+        self.add(childVC: GFItemRepoVC          (user: user, delegate: self),   to: self.itemViewOne)
+        self.add(childVC: GFItemFollowersVC     (user: user, delegate: self),   to: self.itemViewTwo)
         
-        let itemRepoVC              = GFItemRepoVC(user: user)
-        itemRepoVC.delegate         = self
-        
-        let itemFollowersVC         = GFItemFollowersVC(user: user)
-        itemFollowersVC.delegate    = self
-        
-        self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
-        
-        self.add(childVC: itemRepoVC,       to: self.itemViewOne)
-        self.add(childVC: itemFollowersVC,  to: self.itemViewTwo)
-        
-        self.dateLabel.text = "GitHub since \(user.createdAt.convertToDisplayFormat())"
+        self.dateLabel.text = "GitHub since \(user.createdAt.convertToMonthYearFormat())"
     }
     
     func layoutUI() {
@@ -75,7 +63,7 @@ class UserInfoVC: UIViewController {
         let padding: CGFloat        = 20
         let itemHeight: CGFloat     = 140
         let itemViews               = [headerView, itemViewOne, itemViewTwo, dateLabel]
-        let itemHeights             = [itemHeight + 40, itemHeight, itemHeight, 18]
+        let itemHeights             = [itemHeight + 40, itemHeight, itemHeight, 40]
         let topAnchors              = [view.safeAreaLayoutGuide.topAnchor, headerView.bottomAnchor, itemViewOne.bottomAnchor, itemViewTwo.bottomAnchor]
         
         for (index, itemView) in itemViews.enumerated()  {
@@ -100,7 +88,7 @@ class UserInfoVC: UIViewController {
 
 }
 
-extension UserInfoVC: UserInfoVCDelegate {
+extension UserInfoVC: GFItemRepoVCDelegate {
     
     func didTapGitHubProfile(for user: User) {
         guard let url = URL(string: user.htmlUrl) else {
@@ -109,13 +97,15 @@ extension UserInfoVC: UserInfoVCDelegate {
         }
         self.presentSafariVC(with: url)
     }
+}
+
+extension UserInfoVC: GFItemFollowersVCDelegate {
     
     func didTapGetFollowers(for user: User) {
         guard user.followers != 0 else {
             presentGFAlertOnMainThread(title: "No Followers", message: "This user has no followers. What a shame 😞", buttonTitle: "OK")
             return
         }
-        
         delegate.didRequestFollowers(for: user.login)
         dismissVC()
     }
