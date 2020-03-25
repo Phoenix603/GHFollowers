@@ -8,20 +8,27 @@
 
 import UIKit
 
+protocol UserInfoVCDelegate: class {
+    func didRequestFollowers(for username: String)
+}
+
 class UserInfoVC: UIViewController {
-    
+
     var username: String!
-    weak var delegate: FollowersListVCDelegate!
+    weak var delegate: UserInfoVCDelegate!
+    
+    let scrollView  = UIScrollView()
+    let contentView = UIView()
     
     let headerView  = UIView()
     let itemViewOne = UIView()
     let itemViewTwo = UIView()
     let dateLabel   = GFBodyLabel(textAlignment: .center)
-    //var itemViews   = [UIView]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
+        configureScrollView()
         layoutUI()
         getUserInfo()
     }
@@ -34,6 +41,16 @@ class UserInfoVC: UIViewController {
         view.backgroundColor = .systemBackground
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissVC))
         navigationItem.rightBarButtonItem = doneButton
+    }
+    
+    func configureScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        scrollView.pinToEdges(of: view)
+        contentView.pinToEdges(of: scrollView)
+        
+        contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+        contentView.heightAnchor.constraint(equalToConstant: 600).isActive = true
     }
     
     func getUserInfo() {
@@ -64,16 +81,16 @@ class UserInfoVC: UIViewController {
         let itemHeight: CGFloat     = 140
         let itemViews               = [headerView, itemViewOne, itemViewTwo, dateLabel]
         let itemHeights             = [itemHeight + 40, itemHeight, itemHeight, 40]
-        let topAnchors              = [view.safeAreaLayoutGuide.topAnchor, headerView.bottomAnchor, itemViewOne.bottomAnchor, itemViewTwo.bottomAnchor]
+        let topAnchors              = [contentView.topAnchor, headerView.bottomAnchor, itemViewOne.bottomAnchor, itemViewTwo.bottomAnchor]
         
         for (index, itemView) in itemViews.enumerated()  {
-            view.addSubview(itemView)
+            contentView.addSubview(itemView)
             itemView.translatesAutoresizingMaskIntoConstraints = false
             
             NSLayoutConstraint.activate([
                 itemView.topAnchor.constraint(equalTo: topAnchors[index], constant: padding),
-                itemView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-                itemView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+                itemView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+                itemView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
                 itemView.heightAnchor.constraint(equalToConstant: itemHeights[index])
             ])
         }
